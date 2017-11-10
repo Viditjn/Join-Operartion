@@ -90,18 +90,10 @@ bool breakCond(long long int Mb,long long int totalRecords,long long int Rsize){
 }
 
 bool sortAsc(const vector<string> a,const vector<string> b){
-  int i;
-  for(i=0;i<compareLen;i++){
-    if(a[compareOrder[i]]==b[compareOrder[i]])
-      continue;
-    else{
-      if(sortOrder == 0)
-        return (a[compareOrder[i]] < b[compareOrder[i]]);
-      else
-        return (a[compareOrder[i]] > b[compareOrder[i]]);
-    }
-  }
-  return true;
+  if(sortOrder == 0)
+    return a[1] < b[1];
+  else
+    return a[0] < b[0];
 }
 
 class mycomp {
@@ -122,11 +114,15 @@ int operator() (const record& a,const record& b) const {
 }
 };
 
-void writeToFile(vector <vector <string> > vec,int fileNum,long long int sizeL){
+void writeToFile(vector <vector <string> > vec,int fileNum){
+  cout << "sublevel 1" << endl;
   string fileName = to_string(fileNum) + ".txt";
   //cout << fileName << endl;
+  long long int sizeL = vec.size();
   ofstream myfile(fileName.c_str());
-  sort(vec.begin(),vec.begin()+sizeL,sortAsc);
+  cout << compareOrder.size() << " " << compareOrder[0] << " " << vec[0].size() << endl;
+  sort(vec.begin(),vec.end(),sortAsc);
+  cout << "sublevel 2" << endl;
   if(myfile.is_open()){
     for(int i=0;i<sizeL;i++){
       string s = vec[i][0];
@@ -135,8 +131,11 @@ void writeToFile(vector <vector <string> > vec,int fileNum,long long int sizeL){
       s = s + "  " + vec[i][vec[0].size()-1] + '\r'+'\n';
       myfile << s;
     }
+    cout << "sublevel 3" << endl;
     myfile.close();
   }
+  cout << "sublevel 4" << endl;
+  return;
 }
 long long int totalLines = 0;
 void writeData(ofstream& out, vector <vector <string> > outBuf){
@@ -262,9 +261,9 @@ void merge(string outFile,int totalFiles,long long int blockSize,long long int t
   return;
 }
 
-int sortFiles(int colNum, long long int Rsize,long long int totalCol, int Mb, char* fileName, string fileOut){
+int sortFiles(int colNum,int sorder, long long int Rsize,long long int totalCol, int Mb, char* fileName, string fileOut){
   cout << "level1" << endl;
-  sortOrder = 0;
+  sortOrder = sorder;
   if(compareOrder.size()==0)
     compareOrder.push_back(colNum);
   compareOrder[0] = colNum;
@@ -305,7 +304,8 @@ int sortFiles(int colNum, long long int Rsize,long long int totalCol, int Mb, ch
     temp.clear();
     i++;
     if(i==recordPerFile){
-      writeToFile(vec,fileNum,min(remainingRecords,recordPerFile));
+      cout << "hello" << endl;
+      writeToFile(vec,fileNum);
       countPerFile.push_back(min(remainingRecords,recordPerFile));
       remainingRecords -= recordPerFile;
       i=0;
@@ -316,8 +316,9 @@ int sortFiles(int colNum, long long int Rsize,long long int totalCol, int Mb, ch
     }
   }
   cout << "level3" << endl;
+  cout << i << " " << vec.size() << endl;
   if(i!=0){
-    writeToFile(vec,fileNum,min(remainingRecords,recordPerFile));
+    writeToFile(vec,fileNum);
     countPerFile.push_back(min(remainingRecords,recordPerFile));
   }
   merge(fileOut,fileNum+1,BlockSize,totalCol);
@@ -338,7 +339,7 @@ int main(int argc, char** argv){
     cout << "Error : Check Filename " << endl;
     return 0;
   }
-  int a = sortFiles(1,data.size,data.col,atoi(argv[3]),argv[1],"outp1.txt");
+  int a = sortFiles(1,0,data.size,data.col,atoi(argv[3]),argv[1],"outp1.txt");
   if(a==0){
     cout << "error in sorting file 1" << endl;
     return 0;
@@ -350,7 +351,7 @@ int main(int argc, char** argv){
     cout << "Error : Check Filename " << endl;
     return 0;
   }
-  a = sortFiles(0,data.size,data.col,atoi(argv[3]),argv[2],"outp2.txt");
+  a = sortFiles(0,1,data.size,data.col,atoi(argv[3]),argv[2],"outp2.txt");
   if(a==0){
     cout << "error in sorting file 2" << endl;
     return 0;

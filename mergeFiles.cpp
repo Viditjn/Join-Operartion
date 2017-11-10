@@ -7,11 +7,11 @@ using namespace std;
 
 void mergeFiles(){
   ifstream in1;
-  in1.open("out1.txt");
+  in1.open("outp1.txt");
   ifstream in2;
-  in2.open("out2.txt");
+  in2.open("outp2.txt");
   ofstream outFinal;
-  outFinal.open("finalOut.txt");
+  outFinal.open("finalOutp.txt");
   long long int offset1=0,offset2=0,tempOffset=0;
   string line1,line2;
   if(in1.is_open()){
@@ -40,10 +40,10 @@ void mergeFiles(){
           z1 = z1.substr(0,z1.length()-1);
           free(si);
           if(string(y1)==string(y2)){
-            cout << y1 << " " << y2 << endl;
+            // cout << y1 << " " << y2 << endl;
             if(outFinal.is_open()){
               string outS;
-              // outS = x1 + " " + y1 + " " + z1 + '\n';
+              outS = x1 + " " + y1 + " " + z1 + '\n';
               outFinal << outS;
               cout << outS;
             }
@@ -60,4 +60,8 @@ void mergeFiles(){
   in2.close();
   outFinal.close();
   return;
+}
+
+int main(){
+  mergeFiles();
 }
