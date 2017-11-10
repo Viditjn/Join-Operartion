@@ -24,10 +24,18 @@ void mergeFiles(){
       token = strtok(NULL,delim);
       string y1 = token;
       y1 = y1.substr(0,y1.length()-1);
-      // cout << "Printing : "<< y1 << endl;
+      // cout << "Printing : "<< y1 << " " << x1 << endl;
       free(si);
       if(in2.is_open()){
-        in2.seekg(offset2);
+        // cout << in2.tellg() << endl;
+        // in2.seekg(0,ios::beg);
+        // cout << in2.tellg() << endl;
+        if(in2.tellg()==-1){
+          in2.close();
+          in2.open("outp2.txt");
+          in2.seekg(offset2);
+          // cout << in2.tellg() << endl;
+        }
         while(getline(in2,line2)){
           tempOffset = offset2 + line2.length() + 1;
           char * si = strdup(line2.c_str());
